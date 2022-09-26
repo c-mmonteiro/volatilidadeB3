@@ -47,6 +47,14 @@ class VolatilidadeB3():
         self.input_intervalo.insert("1.0", str(self.intervalo.get()))
         self.input_intervalo.place(y = 50, x = 90)
 
+        self.lbl_intervalo_vi = tk.Label(self.top_frame, width=10, height = 1, text="Num Dias VI")
+        self.lbl_intervalo_vi.place(y = 50, x = 200)
+        self.intervalo_vi = IntVar(self.top_frame)
+        self.intervalo_vi.set(10)
+        self.input_intervalo_vi = tk.Text(self.top_frame, width = 10, height = 1)
+        self.input_intervalo_vi.insert("1.0", str(self.intervalo_vi.get()))
+        self.input_intervalo_vi.place(y = 50, x = 280)
+
         self.lbl_num_vol = tk.Label(self.top_frame, width=10, height = 1, text="Num Dias Vol")
         self.lbl_num_vol.place(y = 80, x = 10)
         self.num_vol = IntVar(self.top_frame)
@@ -62,6 +70,10 @@ class VolatilidadeB3():
         self.input_media_vol = tk.Text(self.top_frame, width = 10, height = 1)
         self.input_media_vol.insert("1.0", str(self.media_vol.get()))
         self.input_media_vol.place(y = 110, x = 90)
+
+
+        #############################################################################
+        ##### Botão
         
         #Botão Atualizar
         self.btn_update = Button(self.top_frame, text="Atualizar Dados", command=self.atualizar_dados, height = 2, width = 15)
@@ -86,8 +98,11 @@ class VolatilidadeB3():
         self.num_vol.set(int(self.input_num_vol.get("1.0", END)))
         self.intervalo.set(int(self.input_intervalo.get("1.0", END)))
         self.media_vol.set(int(self.input_media_vol.get("1.0", END)))
+        self.intervalo_vi.set(int(self.input_intervalo_vi.get("1.0", END)))
 
-        volHist = DownloadDados(self.ativo.get(), self.num_vol.get(), self.intervalo.get(), self.media_vol.get()).get_volHistorica()
+        volHist = DownloadVolHist(self.ativo.get(), self.num_vol.get(), self.intervalo.get(), self.media_vol.get()).get_volHistorica()
+
+        volImp = DownloadVolImp(self.ativo.get(), self.intervalo_vi.get(), 0.1375).get_volImplicita()
 
        
 
@@ -97,6 +112,9 @@ class VolatilidadeB3():
 
         self.ax_fig_graph.plot(volHist["Dia"], volHist["Volatilidade"], label="Volatilidade")
         self.ax_fig_graph.plot(volHist["Dia"], volHist["Media"], label="Média")
+
+        self.ax_fig_graph.plot(volImp["Dia"], volImp["Vol Call"], label="VI Call")
+        self.ax_fig_graph.plot(volImp["Dia"], volImp["Vol Put"], label="VI Put")
 
         self.ax_fig_graph.legend()
         self.ax_fig_graph.set_xlabel("Dias")
